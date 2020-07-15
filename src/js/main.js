@@ -3,11 +3,12 @@
   let prevScrollHeight = 0;
   let currentScene = 0;
   let enterNewScene = false;
+  const imageHeight = 852;
 
   const sceneInfo = [
     {
       type: "sticky",
-      heightNum: 5, // 브라우저 높이의 num배로 셋팅
+      heightNum: 7, // 브라우저 높이의 num배로 셋팅
       scrollHeight: 0,
       objs: {
         container: document.querySelector("#scroll-section-0"),
@@ -36,10 +37,13 @@
         messageB_translateY_out: [0, -20, { start: 0.45, end: 0.5 }],
         messageC_translateY_out: [0, -20, { start: 0.65, end: 0.7 }],
         messageD_translateY_out: [0, -20, { start: 0.85, end: 0.9 }],
-        videoImageCount: 300,
-        imageSequence: [0, 299],
+        videoImageCount: 406,
+        imageSequence: [0, 405],
         canvase_opacity_in: [0, 1, { start: 0.01, end: 0.2 }],
         canvase_opacity_out: [1, 0, { start: 0.9, end: 1 }],
+        imagePath: "./videos/duckdog",
+        imageWidth: 852,
+        imageHeight: 480,
       },
     },
     {
@@ -112,7 +116,7 @@
 
     document.body.setAttribute("id", `show-scene-${currentScene}`);
 
-    const heightRatio = window.innerHeight / 1080;
+    const heightRatio = window.innerHeight / imageHeight;
     sceneInfo[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
 
     console.log("Init SceneInfo", sceneInfo);
@@ -173,7 +177,13 @@
         let sequence = Math.round(
           calcValues(values.imageSequence, currentYOffset)
         );
-        objs.context.drawImage(objs.videoImages[sequence], 0, 0);
+
+        const tempImage = objs.videoImages[sequence];
+        objs.context.drawImage(
+          tempImage,
+          1920 / 2 - tempImage.width / 2,
+          1080 / 2 - tempImage.height / 2
+        );
 
         console.log("sequence", sequence);
         if (scrollRatio <= 0.22) {
@@ -248,10 +258,10 @@
         }
 
         if (scrollRatio <= 0.2) {
-          objs.canvas.style.opacity = calcValues(
-            values.canvase_opacity_in,
-            currentYOffset
-          );
+          // objs.canvas.style.opacity = calcValues(
+          //   values.canvase_opacity_in,
+          //   currentYOffset
+          // );
         } else {
           objs.canvas.style.opacity = calcValues(
             values.canvase_opacity_out,
@@ -359,7 +369,9 @@
     let imgElem;
     for (let i = 0; i < sceneInfo[0].values.videoImageCount; i++) {
       imgElem = new Image();
-      imgElem.src = `./videos/001/IMG_${6726 + i}.JPG`;
+      imgElem.src = `${sceneInfo[0].values.imagePath}/${(i + 80)
+        .toString()
+        .padStart(3, "0")}.JPG`;
       sceneInfo[0].objs.videoImages.push(imgElem);
     }
   };
@@ -372,7 +384,12 @@
   window.addEventListener("load", () => {
     setLayout();
     const { objs } = sceneInfo[0];
-    // objs.context.drawImage(objs.videoImages[0], 0, 0);
+    const tempImage = objs.videoImages[0];
+    objs.context.drawImage(
+      tempImage,
+      1920 / 2 - tempImage.width / 2,
+      1080 / 2 - tempImage.height / 2
+    );
   });
 
   window.addEventListener("scroll", () => {

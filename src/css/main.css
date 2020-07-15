@@ -165,7 +165,8 @@ a {
   align-items: center;
   justify-content: center;
   height: 7rem;
-  background-color: darkorange;
+  background-color: #1d1d1f;
+  color: #a1a1a6;
 }
 
 .sticky-elem {
