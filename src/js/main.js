@@ -41,7 +41,7 @@
         imageSequence: [0, 405],
         canvase_opacity_in: [0, 1, { start: 0.01, end: 0.2 }],
         canvase_opacity_out: [1, 0, { start: 0.9, end: 1 }],
-        imagePath: "./videos/duckdog",
+        imagePath: "./src/videos/duckdog",
         imageWidth: 852,
         imageHeight: 480,
       },
