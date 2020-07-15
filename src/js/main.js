@@ -37,10 +37,17 @@
         messageB_translateY_out: [0, -20, { start: 0.45, end: 0.5 }],
         messageC_translateY_out: [0, -20, { start: 0.65, end: 0.7 }],
         messageD_translateY_out: [0, -20, { start: 0.85, end: 0.9 }],
-        videoImageCount: 406,
-        imageSequence: [0, 405],
+        videoConfig: {
+          path: "./src/videos/duckdog",
+          width: 852,
+          height: 480,
+          count: 406,
+          sequenceArr: [0, 405],
+        },
         canvase_opacity_in: [0, 1, { start: 0.01, end: 0.2 }],
         canvase_opacity_out: [1, 0, { start: 0.9, end: 1 }],
+        videoImageCount: 406,
+        imageSequence: [0, 405],
         imagePath: "./src/videos/duckdog",
         imageWidth: 852,
         imageHeight: 480,
@@ -65,6 +72,9 @@
         messageC: document.querySelector("#scroll-section-2 .desc-message.c"),
         pinB: document.querySelector("#scroll-section-2 .desc-message.b .pin"),
         pinC: document.querySelector("#scroll-section-2 .desc-message.c .pin"),
+        canvas: document.querySelector("#video-canvas-2"),
+        context: document.querySelector("#video-canvas-2").getContext("2d"),
+        videoImages: [],
       },
       values: {
         messageA_opatity_in: [0, 1, { start: 0.1, end: 0.3 }],
@@ -79,6 +89,15 @@
         messageA_translateY_out: [0, -20, { start: 0.35, end: 0.4 }],
         messageB_translateY_out: [0, -20, { start: 0.55, end: 0.6 }],
         messageC_translateY_out: [0, -20, { start: 0.75, end: 0.8 }],
+        videoConfig: {
+          path: "./src/videos/duckdog",
+          width: 852,
+          height: 480,
+          count: 406,
+          sequenceArr: [0, 405],
+        },
+        canvase_opacity_in: [0, 1, { start: 0.01, end: 0.2 }],
+        canvase_opacity_out: [1, 0, { start: 0.9, end: 1 }],
       },
     },
     {
@@ -118,6 +137,7 @@
 
     const heightRatio = window.innerHeight / imageHeight;
     sceneInfo[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+    sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
 
     console.log("Init SceneInfo", sceneInfo);
   };
@@ -170,7 +190,7 @@
     const currentYOffset = yOffset - prevScrollHeight;
     const scrollRatio = currentYOffset / scrollHeight;
 
-    // console.log("currentScene", currentScene);
+    console.log("currentScene", currentScene);
     switch (currentScene) {
       case 0:
         // a
@@ -273,6 +293,18 @@
       case 1:
         break;
       case 2:
+        let sequence2 = Math.round(
+          calcValues(values.videoConfig.sequenceArr, currentYOffset)
+        );
+
+        const tempImage2 = objs.videoImages[sequence2];
+        objs.context.drawImage(
+          tempImage2,
+          1920 / 2 - tempImage2.width / 2,
+          1080 / 2 - tempImage2.height / 2
+        );
+
+        console.log("sequence2", sequence2);
         // a
         if (scrollRatio <= 0.22) {
           changeNormalStyle(
@@ -326,6 +358,18 @@
             values.messageC_translateY_out
           );
         }
+
+        if (scrollRatio <= 0.2) {
+          // objs.canvas.style.opacity = calcValues(
+          //   values.canvase_opacity_in,
+          //   currentYOffset
+          // );
+        } else {
+          objs.canvas.style.opacity = calcValues(
+            values.canvase_opacity_out,
+            currentYOffset
+          );
+        }
         break;
       case 3:
         break;
@@ -373,6 +417,14 @@
         .toString()
         .padStart(3, "0")}.jpg`;
       sceneInfo[0].objs.videoImages.push(imgElem);
+    }
+    let imgElem2;
+    for (let i = 0; i < sceneInfo[2].values.videoImageCount; i++) {
+      imgElem = new Image();
+      imgElem.src = `${sceneInfo[2].values.imagePath}/${(i + 80)
+        .toString()
+        .padStart(3, "0")}.jpg`;
+      sceneInfo[2].objs.videoImages.push(imgElem);
     }
   };
 
