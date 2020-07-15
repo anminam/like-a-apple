@@ -1,0 +1,23 @@
+{
+  "name": "likeaapple",
+  "version": "1.0.0",
+  "description": "## DEMO",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anminam/like-a-apple.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anminam/like-a-apple/issues"
+  },
+  "homepage": "https://anminam.github.io/like-a-apple/",
+  "dependencies": {
+    "gh-pages": "^3.1.0"
+  }
+}
