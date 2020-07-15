@@ -371,7 +371,7 @@
       imgElem = new Image();
       imgElem.src = `${sceneInfo[0].values.imagePath}/${(i + 80)
         .toString()
-        .padStart(3, "0")}.JPG`;
+        .padStart(3, "0")}.jpg`;
       sceneInfo[0].objs.videoImages.push(imgElem);
     }
   };
