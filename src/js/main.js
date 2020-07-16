@@ -114,6 +114,10 @@
         rect1X: [0, 0, { start: 0, end: 0 }],
         rect2X: [0, 0, { start: 0, end: 0 }],
         blendHeight: [0, 0, { start: 0, end: 0 }],
+        canvasScale: [0, 0, { start: 0, end: 0 }],
+
+        caption_opacity: [0, 1, { start: 0, end: 0 }],
+        caption_translateY: [20, 0, { start: 0, end: 0 }],
         rectStartY: 0,
       },
     },
@@ -529,6 +533,42 @@
           }px`;
         }
 
+        if (scrollRatio > values.blendHeight[2].end) {
+          values.canvasScale[0] = canvasScaleRatio;
+          values.canvasScale[1] =
+            document.body.offsetWidth / (1.5 * objs.canvas.width);
+          values.canvasScale[2].start = values.blendHeight[2].end;
+          values.canvasScale[2].end = values.canvasScale[2].start + 0.2;
+          objs.canvas.style.transform = `scale(${calcValues(
+            values.canvasScale,
+            currentYOffset
+          )})`;
+
+          objs.canvas.style.marginTop = 0;
+        }
+
+        if (
+          scrollRatio > values.canvasScale[2].end &&
+          values.canvasScale[2].end > 0
+        ) {
+          objs.canvas.classList.remove("sticky");
+          objs.canvas.style.marginTop = `${scrollHeight * 0.4}px`;
+
+          values.caption_opacity[2].start = values.canvasScale[2].end;
+          values.caption_opacity[2].end = values.caption_opacity[2].start + 0.1;
+          objs.canvasCaption.style.opacity = calcValues(
+            values.caption_opacity,
+            currentYOffset
+          );
+
+          values.caption_translateY[2].start = values.canvasScale[2].end;
+          values.caption_translateY[2].end =
+            values.caption_translateY[2].start + 0.1;
+          objs.canvasCaption.style.transform = `translate3d(0, ${calcValues(
+            values.caption_translateY,
+            currentYOffset
+          )}%, 0)`;
+        }
         // console.log("reaclac", recalcInnerWidth, recalcInnerHeight);
 
         // console.log("case3", widthRatio, heightRatio, canvasScaleRatio);
