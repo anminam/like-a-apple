@@ -46,11 +46,6 @@
         },
         canvase_opacity_in: [0, 1, { start: 0.01, end: 0.2 }],
         canvase_opacity_out: [1, 0, { start: 0.9, end: 1 }],
-        videoImageCount: 406,
-        imageSequence: [0, 405],
-        imagePath: "./src/videos/duckdog",
-        imageWidth: 852,
-        imageHeight: 480,
       },
     },
     {
@@ -96,8 +91,8 @@
           count: 406,
           sequenceArr: [0, 405],
         },
-        canvase_opacity_in: [0, 1, { start: 0.01, end: 0.2 }],
-        canvase_opacity_out: [1, 0, { start: 0.9, end: 1 }],
+        canvase_opacity_in: [0, 1, { start: 0, end: 0.1 }],
+        canvase_opacity_out: [1, 0, { start: 0.95, end: 1 }],
       },
     },
     {
@@ -106,7 +101,20 @@
       scrollHeight: 0,
       objs: {
         container: document.querySelector("#scroll-section-3"),
-        canvaseCaption: document.querySelector(".canvase-section"),
+        canvasCaption: document.querySelector(".canvas-caption"),
+        canvas: document.querySelector(".image-blend-canvas"),
+        context: document.querySelector(".image-blend-canvas").getContext("2d"),
+        imagesPath: [
+          "./src/images/blend-image-1.jpg",
+          "./src/images/blend-image-2.jpg",
+        ],
+        images: [],
+      },
+      values: {
+        rect1X: [0, 0, { start: 0, end: 0 }],
+        rect2X: [0, 0, { start: 0, end: 0 }],
+        blendHeight: [0, 0, { start: 0, end: 0 }],
+        rectStartY: 0,
       },
     },
   ];
@@ -190,12 +198,12 @@
     const currentYOffset = yOffset - prevScrollHeight;
     const scrollRatio = currentYOffset / scrollHeight;
 
-    console.log("currentScene", currentScene);
+    // console.log("currentScene", currentScene);
     switch (currentScene) {
       case 0:
         // a
         let sequence = Math.round(
-          calcValues(values.imageSequence, currentYOffset)
+          calcValues(values.videoConfig.sequenceArr, currentYOffset)
         );
 
         const tempImage = objs.videoImages[sequence];
@@ -304,7 +312,7 @@
           1080 / 2 - tempImage2.height / 2
         );
 
-        console.log("sequence2", sequence2);
+        // console.log("sequence2", sequence2);
         // a
         if (scrollRatio <= 0.22) {
           changeNormalStyle(
@@ -359,19 +367,171 @@
           );
         }
 
-        if (scrollRatio <= 0.2) {
-          // objs.canvas.style.opacity = calcValues(
-          //   values.canvase_opacity_in,
-          //   currentYOffset
-          // );
+        // 등장하고 나가고니까 그냥 반으로 한다
+        if (scrollRatio <= 0.5) {
+          objs.canvas.style.opacity = calcValues(
+            values.canvase_opacity_in,
+            currentYOffset
+          );
         } else {
           objs.canvas.style.opacity = calcValues(
             values.canvase_opacity_out,
             currentYOffset
           );
         }
+
+        if (scrollRatio > 0.9) {
+          const { values, objs } = sceneInfo[3];
+          // 가로/세로 모두 꽉 차게 하기 위해 여기서 세팅(계산 필요)
+          const widthRatio = document.body.offsetWidth / objs.canvas.width;
+          const heightRatio = window.innerHeight / objs.canvas.height;
+          let canvasScaleRatio;
+
+          if (widthRatio <= heightRatio) {
+            // 캔버스보다 브라우저 창이 홀쭉한 경우
+            canvasScaleRatio = heightRatio;
+          } else {
+            // 캔버스보다 브라우저 창이 납작한 경우
+            canvasScaleRatio = widthRatio;
+          }
+
+          objs.canvas.style.transform = `scale(${canvasScaleRatio})`;
+          objs.context.fillStyle = "white";
+          objs.context.drawImage(objs.images[0], 0, 0);
+
+          // 캔버스 사이즈에 맞춰 가정한 innerWidth와 innerHeight
+          const recalculatedInnerWidth =
+            document.body.offsetWidth / canvasScaleRatio;
+          const recalculatedInnerHeight = window.innerHeight / canvasScaleRatio;
+
+          // 하얀박스
+          const whiteRectWidth = recalculatedInnerWidth * 0.15;
+          values.rect1X[0] = (objs.canvas.width - recalculatedInnerWidth) / 2;
+          values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
+          values.rect2X[0] =
+            values.rect1X[0] + recalculatedInnerWidth - whiteRectWidth;
+          values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
+
+          // console.log("3 start");
+          // 좌우 흰색 박스 그리기
+          objs.context.fillRect(
+            parseInt(values.rect1X[0]),
+            0,
+            parseInt(whiteRectWidth),
+            objs.canvas.height
+          );
+          objs.context.fillRect(
+            parseInt(values.rect2X[0]),
+            0,
+            parseInt(whiteRectWidth),
+            objs.canvas.height
+          );
+        }
         break;
       case 3:
+        let step = 0;
+
+        // 가로/세로 모두 꽉 차게 하기 위해 여기서 세팅(계산 필요)
+        const widthRatio = document.body.offsetWidth / objs.canvas.width;
+        const heightRatio = window.innerHeight / objs.canvas.height;
+        let canvasScaleRatio;
+
+        if (widthRatio <= heightRatio) {
+          // 캔버스보다 브라우저 창이 홀쭉한 경우
+          canvasScaleRatio = heightRatio;
+        } else {
+          // 캔버스보다 브라우저 창이 납작한 경우
+          canvasScaleRatio = widthRatio;
+        }
+
+        objs.canvas.style.transform = `scale(${canvasScaleRatio})`;
+        objs.context.fillStyle = "white";
+        objs.context.drawImage(objs.images[0], 0, 0);
+
+        // 캔버스 사이즈에 맞춰 가정한 innerWidth와 innerHeight
+        const recalculatedInnerWidth =
+          document.body.offsetWidth / canvasScaleRatio;
+        const recalculatedInnerHeight = window.innerHeight / canvasScaleRatio;
+
+        if (values.rectStartY <= 0) {
+          // values.rectStartY = objs.canvas.getBoundingClientRect().top;
+          values.rectStartY =
+            objs.canvas.offsetTop +
+            (objs.canvas.height - objs.canvas.height * canvasScaleRatio) / 2;
+          values.rect1X[2].start = window.innerHeight / 2 / scrollHeight;
+          values.rect2X[2].start = window.innerHeight / 2 / scrollHeight;
+          values.rect1X[2].end = values.rectStartY / scrollHeight;
+          values.rect2X[2].end = values.rectStartY / scrollHeight;
+          console.log(
+            "rectStartY",
+            values.rectStartY,
+            values.rect1X[2].end,
+            values.rect2X[2].end
+          );
+        }
+
+        // 하얀박스
+        const whiteRectWidth = recalculatedInnerWidth * 0.15;
+        values.rect1X[0] = (objs.canvas.width - recalculatedInnerWidth) / 2;
+        values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
+        values.rect2X[0] =
+          values.rect1X[0] + recalculatedInnerWidth - whiteRectWidth;
+        values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
+
+        // console.log("3 start");
+        // 좌우 흰색 박스 그리기
+        objs.context.fillRect(
+          parseInt(calcValues(values.rect1X, currentYOffset)),
+          0,
+          parseInt(whiteRectWidth),
+          objs.canvas.height
+        );
+        objs.context.fillRect(
+          parseInt(calcValues(values.rect2X, currentYOffset)),
+          0,
+          parseInt(whiteRectWidth),
+          objs.canvas.height
+        );
+
+        if (scrollRatio < values.rect1X[2].end) {
+          step = 1;
+          objs.canvas.classList.remove("sticky");
+        } else {
+          step = 2;
+          console.log("캔버스 닿은 후");
+
+          // [0, 0, { start: 0, end: 0 }],
+
+          values.blendHeight[0] = 0;
+          values.blendHeight[1] = objs.canvas.height;
+          values.blendHeight[2].start = values.rect1X[2].end;
+          values.blendHeight[2].end = values.blendHeight[2].start + 0.2;
+
+          // objs.context.drawImage(objs.images[1], 0, 200);
+
+          const blendHeight = calcValues(values.blendHeight, currentYOffset);
+
+          objs.context.drawImage(
+            objs.images[1],
+            0, // sx,
+            objs.canvas.height - blendHeight, // sy,
+            objs.canvas.width, // sWidth,
+            blendHeight, // sHeight,
+            0, // sx,
+            objs.canvas.height - blendHeight, // sy,
+            objs.canvas.width, // sWidth,
+            blendHeight // sHeight,
+          );
+
+          objs.canvas.classList.add("sticky");
+          objs.canvas.style.top = `${
+            -(objs.canvas.height - objs.canvas.height * canvasScaleRatio) / 2
+          }px`;
+        }
+
+        // console.log("reaclac", recalcInnerWidth, recalcInnerHeight);
+
+        // console.log("case3", widthRatio, heightRatio, canvasScaleRatio);
         break;
     }
     // console.log(values, currentYOffset);
@@ -411,25 +571,33 @@
 
   const setCanvasImages = () => {
     let imgElem;
-    for (let i = 0; i < sceneInfo[0].values.videoImageCount; i++) {
+    for (let i = 0; i < sceneInfo[0].values.videoConfig.count; i++) {
       imgElem = new Image();
-      imgElem.src = `${sceneInfo[0].values.imagePath}/${(i + 80)
+      imgElem.src = `${sceneInfo[0].values.videoConfig.path}/${(i + 80)
         .toString()
         .padStart(3, "0")}.jpg`;
       sceneInfo[0].objs.videoImages.push(imgElem);
     }
+
     let imgElem2;
-    for (let i = 0; i < sceneInfo[2].values.videoImageCount; i++) {
-      imgElem = new Image();
-      imgElem.src = `${sceneInfo[2].values.imagePath}/${(i + 80)
+    for (let i = 0; i < sceneInfo[2].values.videoConfig.count; i++) {
+      imgElem2 = new Image();
+      imgElem2.src = `${sceneInfo[2].values.videoConfig.path}/${(i + 80)
         .toString()
         .padStart(3, "0")}.jpg`;
-      sceneInfo[2].objs.videoImages.push(imgElem);
+      sceneInfo[2].objs.videoImages.push(imgElem2);
     }
+
+    sceneInfo[3].objs.imagesPath.forEach((item) => {
+      const imgElem = new Image();
+      imgElem.src = item;
+      sceneInfo[3].objs.images.push(imgElem);
+    });
+    // console.log(sceneInfo[3].objs.images);
   };
 
   setCanvasImages();
-  console.log(sceneInfo[0].objs.videoImages);
+  // console.log(sceneInfo[0].objs.videoImages);
 
   window.addEventListener("resize", setLayout);
   //   window.addEventListener("DOMContentLoaded", setLayout);
