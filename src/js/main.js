@@ -97,7 +97,7 @@
     },
     {
       type: "sticky",
-      heightNum: 5, // 브라우저 높이의 num배로 셋팅
+      heightNum: 6, // 브라우저 높이의 num배로 셋팅
       scrollHeight: 0,
       objs: {
         container: document.querySelector("#scroll-section-3"),
@@ -152,6 +152,14 @@
     sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
 
     console.log("Init SceneInfo", sceneInfo);
+  };
+
+  const checkMenu = () => {
+    if (yOffset > 44) {
+      document.body.classList.add("local-nav-sticky");
+    } else {
+      document.body.classList.remove("local-nav-sticky");
+    }
   };
 
   const scrollLoop = () => {
@@ -655,5 +663,6 @@
   window.addEventListener("scroll", () => {
     yOffset = window.pageYOffset;
     scrollLoop();
+    checkMenu();
   });
 })();
