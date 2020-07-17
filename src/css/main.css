@@ -252,6 +252,7 @@ a {
   .mid-message {
     width: 1000px;
     padding: 0;
+    padding-bottom: 100vh;
     font-size: 4vw;
   }
   .canvas-caption {

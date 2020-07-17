@@ -43,6 +43,7 @@
           height: 480,
           count: 406,
           sequenceArr: [0, 405],
+          startNumber: 80,
         },
         canvase_opacity_in: [0, 1, { start: 0.01, end: 0.2 }],
         canvase_opacity_out: [1, 0, { start: 0.9, end: 1 }],
@@ -621,7 +622,9 @@
     let imgElem;
     for (let i = 0; i < sceneInfo[0].values.videoConfig.count; i++) {
       imgElem = new Image();
-      imgElem.src = `${sceneInfo[0].values.videoConfig.path}/${(i + 80)
+      imgElem.src = `${sceneInfo[0].values.videoConfig.path}/${(
+        i + sceneInfo[0].values.videoConfig.startNumber
+      )
         .toString()
         .padStart(3, "0")}.jpg`;
       sceneInfo[0].objs.videoImages.push(imgElem);
