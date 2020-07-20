@@ -170,13 +170,16 @@
       prevScrollHeight += sceneInfo[i].scrollHeight;
     }
 
-    if (yOffset > prevScrollHeight + sceneInfo[currentScene].scrollHeight) {
+    if (
+      delayedYOffset >
+      prevScrollHeight + sceneInfo[currentScene].scrollHeight
+    ) {
       enterNewScene = true;
       currentScene++;
       document.body.setAttribute("id", `show-scene-${currentScene}`);
     }
 
-    if (yOffset < prevScrollHeight) {
+    if (delayedYOffset < prevScrollHeight) {
       if (currentScene <= 0) {
         return;
       }
@@ -215,18 +218,18 @@
     switch (currentScene) {
       case 0:
         // a
-        let sequence = Math.round(
-          calcValues(values.videoConfig.sequenceArr, currentYOffset)
-        );
+        // let sequence = Math.round(
+        //   calcValues(values.videoConfig.sequenceArr, currentYOffset)
+        // );
 
-        const tempImage = objs.videoImages[sequence];
-        objs.context.drawImage(
-          tempImage,
-          1920 / 2 - tempImage.width / 2,
-          1080 / 2 - tempImage.height / 2
-        );
+        // const tempImage = objs.videoImages[sequence];
+        // objs.context.drawImage(
+        //   tempImage,
+        //   1920 / 2 - tempImage.width / 2,
+        //   1080 / 2 - tempImage.height / 2
+        // );
 
-        console.log("sequence", sequence);
+        // console.log("sequence", sequence);
         if (scrollRatio <= 0.22) {
           changeNormalStyle(
             currentYOffset,
@@ -314,16 +317,16 @@
       case 1:
         break;
       case 2:
-        let sequence2 = Math.round(
-          calcValues(values.videoConfig.sequenceArr, currentYOffset)
-        );
+        // let sequence2 = Math.round(
+        //   calcValues(values.videoConfig.sequenceArr, currentYOffset)
+        // );
 
-        const tempImage2 = objs.videoImages[sequence2];
-        objs.context.drawImage(
-          tempImage2,
-          1920 / 2 - tempImage2.width / 2,
-          1080 / 2 - tempImage2.height / 2
-        );
+        // const tempImage2 = objs.videoImages[sequence2];
+        // objs.context.drawImage(
+        //   tempImage2,
+        //   1920 / 2 - tempImage2.width / 2,
+        //   1080 / 2 - tempImage2.height / 2
+        // );
 
         // console.log("sequence2", sequence2);
         // a
@@ -466,7 +469,7 @@
           document.body.offsetWidth / canvasScaleRatio;
         const recalculatedInnerHeight = window.innerHeight / canvasScaleRatio;
 
-        if (values.rectStartY <= 0) {
+        if (!values.rectStartY) {
           // values.rectStartY = objs.canvas.getBoundingClientRect().top;
           values.rectStartY =
             objs.canvas.offsetTop +
@@ -650,7 +653,16 @@
   setCanvasImages();
   // console.log(sceneInfo[0].objs.videoImages);
 
-  window.addEventListener("resize", setLayout);
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900) {
+      setLayout();
+    }
+
+    sceneInfo[3].values.rectStartY = 0;
+  });
+
+  window.addEventListener("orientationchange", setLayout);
+
   //   window.addEventListener("DOMContentLoaded", setLayout);
   window.addEventListener("load", () => {
     setLayout();
@@ -663,9 +675,50 @@
     );
   });
 
+  // loop
+  let acc = 0.1;
+  let delayedYOffset = 0;
+  let rafId;
+  let rafState;
+
+  const loop = () => {
+    delayedYOffset = delayedYOffset + (yOffset - delayedYOffset) * acc;
+
+    if (!enterNewScene) {
+      if (currentScene === 0 || currentScene == 2) {
+        const currentYOffset = delayedYOffset - prevScrollHeight;
+        const { values, objs } = sceneInfo[currentScene];
+        let sequence = Math.round(
+          calcValues(values.videoConfig.sequenceArr, currentYOffset)
+        );
+
+        if (objs.videoImages[sequence]) {
+          const tempImage = objs.videoImages[sequence];
+          objs.context.drawImage(
+            tempImage,
+            1920 / 2 - tempImage.width / 2,
+            1080 / 2 - tempImage.height / 2
+          );
+        }
+      }
+    }
+
+    rafId = requestAnimationFrame(loop);
+
+    if (Math.abs(yOffset - delayedYOffset) < 1) {
+      cancelAnimationFrame(rafId);
+      rafState = false;
+    }
+  };
+
   window.addEventListener("scroll", () => {
     yOffset = window.pageYOffset;
     scrollLoop();
     checkMenu();
+
+    if (!rafState) {
+      rafId = requestAnimationFrame(loop);
+      rafState = true;
+    }
   });
 })();

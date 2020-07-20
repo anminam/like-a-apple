@@ -219,6 +219,29 @@ a {
   align-items: center;
 }
 
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  background: white;
+  opacity: 1;
+  transition: 0.5;
+}
+.loading-circle {
+  width: 54px;
+  height: 54px;
+}
+.loading-circle circle {
+  stroke: black;
+  stroke-width: 4;
+  fill: none;
+}
+
 @media (min-width: 1024px) {
   #scroll-section-0 h1 {
     font-size: 9vw;
