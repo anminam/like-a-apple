@@ -19,6 +19,16 @@ a {
   color: rgb(29, 29, 31);
   text-decoration: none;
 }
+
+body.before-load {
+  overflow: hidden;
+}
+
+.container {
+  /* 아이폰 가로 스크롤 방지 */
+  overflow-x: hidden;
+}
+
 .global-nav {
   position: absolute;
   top: 0;
@@ -43,6 +53,9 @@ a {
   position: fixed;
   top: 0;
   background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: saturate(180%) blur(15px);
+  -moz-backdrop-filter: saturate(180%) blur(15px);
+  -o-backdrop-filter: saturate(180%) blur(15px);
   backdrop-filter: saturate(180%) blur(15px);
 }
 
@@ -161,10 +174,10 @@ a {
 }
 .canvas-caption {
   max-width: 1000px;
-  margin: -8em auto 0;
+  margin: -24rem auto 0;
   padding: 0 1rem;
-  color: #888;
   font-size: 1.2rem;
+  color: #888;
   /* text-align: center; */
 }
 
@@ -190,6 +203,7 @@ a {
 #show-scene-2 #scroll-section-2 .sticky-elem,
 #show-scene-3 #scroll-section-3 .sticky-elem {
   display: block;
+  will-change: transform, opacity;
 }
 
 .sticky-elem-canvas {
@@ -227,20 +241,56 @@ a {
   top: 0;
   right: 0;
   left: 0;
+  bottom: 0;
   z-index: 100;
   background: white;
+  opacity: 0;
+  transition: 0.5s;
+}
+
+.before-load .container {
+  display: none;
+}
+.before-load .loading {
   opacity: 1;
-  transition: 0.5;
 }
 .loading-circle {
   width: 54px;
   height: 54px;
+  animation: loading-spin-keyframe 3s infinite;
 }
+
+@keyframes loading-spin-keyframe {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loading-circle-keyframe {
+  0% {
+    stroke-dashoffset: 157;
+  }
+  75% {
+    stroke-dashoffset: -147;
+  }
+  100% {
+    stroke-dashoffset: -157;
+  }
+}
+
 .loading-circle circle {
   stroke: black;
   stroke-width: 4;
+  /* getTotalLength 로 얻어올 수 있다 */
+  stroke-dasharray: 157;
+  stroke-dashoffset: 0;
   fill: none;
+  animation: loading-circle-keyframe 1s infinite;
 }
+
+/* .loading-circle:hover circle {
+  stroke-dashoffset: -157;
+} */
 
 @media (min-width: 1024px) {
   #scroll-section-0 h1 {
